@@ -1,0 +1,25 @@
+{
+  "name": "christmas_miracles",
+  "version": "1.0.0",
+  "description": "An application for managing a database of Christmas Miracles for TWUMC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jack Pittenger",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-react": "^7.14.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^5.61.0",
+    "webpack-cli": "^4.9.1"
+  }
+}

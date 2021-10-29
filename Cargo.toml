@@ -1,0 +1,9 @@
+[package]
+name = "TWUMC_backend"
+version = "1.0.0"
+edition = "2018"
+
+[dependencies]
+rocket = "0.5.0-rc.1"
+
+
