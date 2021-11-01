@@ -3,13 +3,6 @@
 version = 3
 
 [[package]]
-name = "TWUMC_backend"
-version = "1.0.0"
-dependencies = [
- "rocket",
-]
-
-[[package]]
 name = "ansi_term"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1358,6 +1351,13 @@ checksum = "c57ffb460d7c24cd6eda43694110189030a3d1dfe418416d9468fd1c1d290b47"
 dependencies = [
  "memchr",
  "unchecked-index",
+]
+
+[[package]]
+name = "twumc_backend"
+version = "1.0.0"
+dependencies = [
+ "rocket",
 ]
 
 [[package]]
