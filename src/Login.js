@@ -8,10 +8,16 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   function handleSubmit(e) {
-    console.log(username);
-    console.log(password);
-
     e.preventDefault();
+
+    const formBody = new FormData();
+    formBody.set("username", username);
+    formBody.set("password", password);
+
+    return fetch("/api/login", {
+      method: "POST",
+      body: formBody,
+    }).then((res) => console.log(res.json()));
   }
 
   return (
