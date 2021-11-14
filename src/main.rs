@@ -1,9 +1,12 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-#[macro_use] extern crate rocket;
+#[macro_use] 
+extern crate rocket;
 
 use std::path::{Path, PathBuf};
 use rocket::{fs::NamedFile, form::Form};
+use twumc_backend::{establish_connection, models::User, schema::users};
+use diesel::prelude::*;
 
 // === Getters === // 
 
@@ -34,8 +37,13 @@ struct LoginRequest<'r> {
 
 #[post("/login", data="<login_request>")]
 fn login(login_request: Form<LoginRequest<'_>>) {
-   println!("{}", login_request.username);
-   println!("{}", login_request.password);
+    let connection = establish_connection();
+    let users = users::table.filter(users::name.eq("joe")).limit(5).load::<User>(&connection).expect("Error loading user!"); 
+    for user in users {
+        println!("{}", user.name);
+    }
+    println!("{}", login_request.username);
+    println!("{}", login_request.password);
 }
 
 // === And away we go! === //
