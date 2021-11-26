@@ -5,13 +5,14 @@ extern crate rocket;
 
 use bcrypt::*;
 use diesel::prelude::*;
+use json::*;
 use rocket::{
     form::Form,
     fs::NamedFile,
     http::{ContentType, Status},
 };
 use std::path::{Path, PathBuf};
-use twumc_backend::{establish_connection, models::User, schema::users};
+use twumc_backend::{establish_connection, models::User, schema::users, sign_jwt};
 
 // === Getters === //
 
@@ -43,7 +44,7 @@ struct LoginRequest<'r> {
 }
 
 #[post("/login", data = "<login_request>")]
-fn login(login_request: Form<LoginRequest<'_>>) -> (Status, (ContentType, &'static str)) {
+fn login(login_request: Form<LoginRequest<'_>>) -> (Status, (ContentType, String)) {
     let connection = establish_connection();
 
     let db_user = users::table
@@ -59,13 +60,30 @@ fn login(login_request: Form<LoginRequest<'_>>) -> (Status, (ContentType, &'stat
                 match verification {
                     Ok(v) => {
                         if v {
-                            return (Status::Ok, (ContentType::JSON, "{ \"msg\": \"success!\"}"));
+                            let jwt_res = sign_jwt(user);
+                            match jwt_res {
+                                Ok(jwt) => {
+                                    return (
+                                        Status::Ok,
+                                        (ContentType::JSON, object! {jwt: jwt}.dump()),
+                                    );
+                                }
+                                Err(_e) => {
+                                    return (
+                                        Status::InternalServerError,
+                                        (
+                                            ContentType::JSON,
+                                            object! {error:"Failed generating JWT!"}.dump(),
+                                        ),
+                                    )
+                                }
+                            }
                         }
                         return (
                             Status::Unauthorized,
                             (
                                 ContentType::JSON,
-                                "{ \"error\": \"Invalid username/password!\"}",
+                                            object! {error:"Invalid username/password!"}.dump(),
                             ),
                         );
                     }
@@ -73,21 +91,24 @@ fn login(login_request: Form<LoginRequest<'_>>) -> (Status, (ContentType, &'stat
                         Status::InternalServerError,
                         (
                             ContentType::JSON,
-                            "{ \"err\": \"Server failed validating password! Try again please\" }",
+                                            object! {error:"Server failed validating password! Try again please :)"}.dump(),
                         ),
                     ),
                 }
             } else {
                 return (
                     Status::Unauthorized,
-                    (ContentType::JSON, "{ \"error\": \"User not found!\"}"),
+                    (
+                        ContentType::JSON,
+                        object! {error:"User not found! :("}.dump(),
+                    ),
                 );
             }
         }
-        Err(e) => {
+        Err(_e) => {
             return (
                 Status::InternalServerError,
-                (ContentType::JSON, "{ \"error\": \"Server failure!!\"}"),
+                (ContentType::JSON, object! {error:"Server failure!"}.dump()),
             )
         }
     }
